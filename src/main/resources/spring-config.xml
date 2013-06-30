@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="db.properties"/>
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${db.driver}"/>
+        <property name="url" value="${db.url}"/>
+        <property name="username" value="${db.user}"/>
+        <property name="password" value="${db.password}"/>
+        <property name="initialSize" value="5"/>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+          lazy-init="true">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="jobLauncher"
+          class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+        <property name="jobRepository" ref="jobRepository"/>
+    </bean>
+
+    <bean id="jobRepository"
+          class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+        <property name="transactionManager" ref="transactionManager"/>
+    </bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean name="jobReader" class="org.springframework.batch.item.file.FlatFileItemReader">
+        <property name="resource" value="file:/home/kiwi/product.csv"/>
+        <property name="linesToSkip" value="1"/>
+        <property name="lineMapper">
+            <bean
+                    class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+                <property name="lineTokenizer">
+                    <bean class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+                        <property name="names" value="PRODUCT_ID,NAME,PRICE"/>
+                    </bean>
+                </property>
+                <property name="fieldSetMapper">
+                    <bean class="org.kiwi.springbatch.ProductFieldSetMapper"/>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="jobWriter" class="org.kiwi.springbatch.ProductWriter">
+        <constructor-arg ref="dataSource"/>
+    </bean>
+
+    <batch:job id="productJob">
+        <batch:step id="stepOne">
+            <batch:tasklet transaction-manager="transactionManager">
+                <batch:chunk reader="jobReader" writer="jobWriter" commit-interval="10"/>
+            </batch:tasklet>
+        </batch:step>
+    </batch:job>
+</beans>
