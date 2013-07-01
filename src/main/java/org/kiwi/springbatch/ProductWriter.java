@@ -12,8 +12,8 @@ public class ProductWriter implements ItemWriter<Product> {
 
     private JdbcTemplate jdbcTemplate;
 
-    public ProductWriter(DataSource source) {
-        this.jdbcTemplate = new JdbcTemplate(source);
+    public ProductWriter(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override

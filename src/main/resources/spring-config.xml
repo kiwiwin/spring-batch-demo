@@ -52,7 +52,7 @@
     </bean>
 
     <bean id="jobWriter" class="org.kiwi.springbatch.ProductWriter">
-        <constructor-arg ref="dataSource"/>
+        <constructor-arg ref="jdbcTemplate"/>
     </bean>
 
     <batch:job id="productJob">
