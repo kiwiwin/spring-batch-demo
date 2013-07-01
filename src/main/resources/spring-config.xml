@@ -8,7 +8,7 @@
     <context:property-placeholder location="db.properties"/>
 
     <jdbc:initialize-database data-source="dataSource" enabled="true">
-        <jdbc:script location="classpath:/org/springframework/batch/core/schema-mysql.sql" />
+        <jdbc:script location="classpath:/org/springframework/batch/core/schema-mysql.sql"/>
     </jdbc:initialize-database>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -55,12 +55,15 @@
         <constructor-arg ref="jdbcTemplate"/>
     </bean>
 
+    <bean id="jobProcessor" class="org.kiwi.springbatch.ProductDiscount"/>
+
     <batch:job-repository data-source="dataSource" transaction-manager="transactionManager"/>
 
     <batch:job id="productJob">
         <batch:step id="stepOne">
             <batch:tasklet transaction-manager="transactionManager">
-                <batch:chunk reader="jobReader" writer="jobWriter" commit-interval="10"/>
+                <batch:chunk reader="jobReader" processor="jobProcessor" writer="jobWriter"
+                             commit-interval="10"/>
             </batch:tasklet>
         </batch:step>
     </batch:job>
