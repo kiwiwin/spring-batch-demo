@@ -3,9 +3,18 @@ package org.kiwi.springbatch;
 import java.math.BigDecimal;
 
 public class Product {
-    private String id;
+    private int id;
+    private String productId;
     private String name;
     private BigDecimal price;
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
 
     public String getName() {
         return name;
@@ -15,11 +24,11 @@ public class Product {
         this.name = name;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

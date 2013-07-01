@@ -7,20 +7,16 @@ import javax.sql.DataSource;
 import java.util.List;
 
 public class ProductWriter implements ItemWriter<Product> {
-    private static final String INSERT_PRODUCT = "insert into PRODUCT " +
-            "(product_id, name, price) values (?, ?, ?)";
+    private ProductManager productManager;
 
-    private JdbcTemplate jdbcTemplate;
-
-    public ProductWriter(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public ProductWriter(ProductManager productManager) {
+        this.productManager = productManager;
     }
 
     @Override
     public void write(List<? extends Product> products) throws Exception {
         for (Product product : products) {
-            jdbcTemplate.update(INSERT_PRODUCT,
-                    product.getId(), product.getName(), product.getPrice());
+            productManager.insertProduct(product);
         }
     }
 }

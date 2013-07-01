@@ -8,9 +8,9 @@ public class ProductDiscount implements ItemProcessor<Product, Product>{
     @Override
     public Product process(Product product) throws Exception {
         Product result = new Product();
-        result.setId(product.getId());
+        result.setProductId(product.getProductId());
         result.setName(product.getName());
-        result.setPrice(product.getPrice().multiply(new BigDecimal(2)));
+        result.setPrice(product.getPrice().divide(new BigDecimal(2)));
         return result;
     }
 }
